@@ -7,6 +7,7 @@ import { ingest } from './flows.js';
 import { isInbox } from './core.js';
 import { homeSpec, inboxSpec, searchSpec, goInbox } from './screens.js';
 import { moreSpec, welcome } from './settings.js';
+import { initLock } from './lock.js';
 
 const TABS = [
   { id: 'files', icon: 'folder', key: 'files_tab', root: () => homeSpec() },
@@ -64,6 +65,7 @@ async function boot() {
   window.addEventListener('dragover', e => e.preventDefault());
   window.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer?.files?.length) ingest(e.dataTransfer.files, { goInbox }); });
 
+  await initLock();
   if (!s.onboarded) welcome({ first: true });
 
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

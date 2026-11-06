@@ -9,6 +9,7 @@ import { GUIDE, PRIVACY } from './guide.js';
 import { t, pair, lang, langName, setLangNow, LANGS } from './i18n.js';
 import { listRow, switchEl, emptyState, typeOf, isInbox, thumbEl } from './core.js';
 import { openDoc } from './screens.js';
+import * as lock from './lock.js';
 
 const gi = (name, color) => h('div.ico', { style: { background: color } }, icon(name));
 
@@ -27,9 +28,12 @@ export const moreSpec = () => ({
       h('div.sec', {}, h('div.group', {},
         listRow({ ico: gi('drive', '#34c759'), title: t('data'), onclick: () => ui.push(dataSpec()) }),
         listRow({ ico: gi('archive', '#8e8e93'), title: t('cleanup'), value: expired || '', onclick: () => ui.push(cleanupSpec()) }),
+        listRow({ ico: gi('lock', '#ff3b30'), title: t('lock_menu'), value: lock.hasLock() ? t('on') : t('off'), onclick: () => ui.push(lockSpec()) }),
         listRow({ ico: gi('sparkles', '#5e5ce6'), title: t('ai_title'), value: s.aiOn && s.apiKey ? t('on') : t('off'), onclick: () => ui.push(aiSpec()) }))),
       h('div.sec', {}, h('div.group', {},
         listRow({ ico: gi('book', '#007aff'), title: t('guide'), onclick: () => ui.push(guideSpec()) }),
+        listRow({ ico: gi('shield', '#30b0c7'), title: t('privacy_full'), onclick: () => window.open('privacy.html', '_blank') }),
+        listRow({ ico: gi('scale', '#8e8e93'), title: t('impressum'), onclick: () => window.open('impressum.html', '_blank') }),
         listRow({ ico: gi('lock', '#30b0c7'), title: t('privacy'), onclick: () => ui.push(privacySpec()) }),
         listRow({ ico: gi('info', '#8e8e93'), title: t('welcome_again'), onclick: () => welcome() }))),
       h('div.sec-f', { style: { textAlign: 'center', paddingTop: '20px' } }, `Aktenschrank · ${TYPES.length - 1} ${t('doc_types')} · v1.0`),
@@ -176,7 +180,7 @@ const dataSpec = () => {
   async function wipe() {
     if (!(await ui.confirmDialog({ title: t('wipe_q'), message: t('wipe_t'), ok: t('wipe_ok'), cancel: t('cancel'), destructive: true }))) return;
     if (!(await ui.confirmDialog({ title: t('wipe_q2'), ok: t('wipe_ok'), cancel: t('cancel'), destructive: true }))) return;
-    await store.wipeAll(); ui.toast(t('wiped'));
+    await store.wipeAll(); await lock.removeLock(); ui.toast(t('wiped'));
     location.reload();
   }
 };
@@ -197,6 +201,66 @@ const cleanupSpec = () => ({
       h('div.sec', { style: { padding: '16px' } }, h('button.btn.danger', { onclick: async () => { if (await ui.confirmDialog({ title: t('delete_all_n', list.length), message: t('delete_t'), ok: t('delete'), cancel: t('cancel'), destructive: true })) { for (const { d } of list) await store.deleteDoc(d.id); ui.toast(t('deleted')); } } }, icon('trash'), t('delete_all_n', list.length))),
       h('div.sec-f', {}, t('cleanup_note')),
     ];
+  },
+});
+
+
+/* ───── Sperre ───── */
+function setCodeSheet(done) {
+  let first = null;
+  const sh = ui.sheet({
+    title: t('lock_set'), right: [],
+    left: () => h('button.nb-btn', { onclick: () => sh.close() }, t('cancel')),
+    build: () => {
+      const pad = lock.pinPad({
+        title: t('lock_new'), sub: '',
+        onDone: async (v, api) => {
+          if (!first) { first = v; pad.querySelector('.pin-title').textContent = t('lock_repeat'); api.reset(''); return; }
+          if (v !== first) { first = null; pad.querySelector('.pin-title').textContent = t('lock_new'); api.reset(t('lock_mismatch'), true); return; }
+          await lock.setPin(v); sh.close(); done?.();
+        },
+      });
+      return h('div', { style: { padding: '8px 0 24px' } }, pad);
+    },
+  });
+}
+function verifySheet(done) {
+  const sh = ui.sheet({
+    title: t('lock_menu'), right: [],
+    left: () => h('button.nb-btn', { onclick: () => sh.close() }, t('cancel')),
+    build: () => h('div', { style: { padding: '8px 0 24px' } }, lock.pinPad({ title: t('lock_cur'), sub: '', onDone: async (v, api) => { if (await lock.verifyPin(v)) { sh.close(); done(); } else api.reset(t('lock_wrong'), true); } })),
+  });
+}
+const lockSpec = () => ({
+  title: () => t('lock_menu'),
+  render: async () => {
+    const on = lock.hasLock();
+    const cfg = lock.lockConfig();
+    const bioOk = on && (await lock.bioSupported());
+    const reload = () => ui.reloadAll();
+    const out = [
+      h('div.sec', {}, h('div.group', {},
+        h('div.row', {}, h('div.grow', {}, h('div.t1', {}, t('lock_menu'))), switchEl(on, v => {
+          if (v) setCodeSheet(() => { ui.toast(t('lock_on_toast')); reload(); });
+          else verifySheet(async () => { await lock.removeLock(); ui.toast(t('lock_off_toast')); reload(); });
+          setTimeout(reload, 0);
+        })))),
+    ];
+    if (on) {
+      out.push(h('div.sec', {}, h('div.group', {},
+        listRow({ title: t('lock_change'), onclick: () => verifySheet(() => setCodeSheet(() => ui.toast(t('lock_on_toast')))) }),
+        listRow({ title: t('lock_now'), onclick: () => lock.lockNow() }))));
+      out.push(h('div.sec', {}, h('div.sec-h', {}, h('span', {}, t('lock_after'))), h('div.group', {},
+        [[0, 'lock_imm'], [60, 'lock_1'], [300, 'lock_5']].map(([sec, k]) =>
+          h('button.row', { onclick: async () => { await lock.setAfter(sec); reload(); } }, h('div.grow', {}, h('div.t1', {}, t(k))), cfg.after === sec && icon('check', 'chev'))))));
+      if (bioOk) out.push(h('div.sec', {}, h('div.group', {},
+        h('div.row', {}, h('div.grow', {}, h('div.t1', {}, t('lock_bio'))), switchEl(cfg.bio, async v => {
+          try { if (v) await lock.enableBio(); else await lock.disableBio(); } catch { ui.toast(t('lock_bio_fail'), 'err'); }
+          reload();
+        }))), h('div.sec-f', {}, t('lock_bio_t'))));
+    }
+    out.push(h('div.warnbox', {}, icon('alert'), h('div', {}, t('lock_note'))));
+    return out;
   },
 });
 
