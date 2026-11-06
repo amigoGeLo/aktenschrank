@@ -282,3 +282,6 @@ input[type=file] { position: fixed; left: -9999px; width: 1px; height: 1px; opac
 .pin-key.ghost { background: none; } .pin-key.ghost .ic { width: 28px; height: 28px; } .pin-key.txt { font-size: 15px; color: var(--tint); }
 body.is-locked #app { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) { .pin-dots.shake { animation: none; } }
+
+.viewer { height: 100%; min-height: 60vh; background: var(--card2); display: flex; } .viewer iframe { flex: 1; width: 100%; border: 0; height: 100%; min-height: calc(100vh - 120px); } .viewer img { max-width: 100%; max-height: 100%; margin: auto; object-fit: contain; }
+.sh-body:has(.viewer) { padding: 0; overflow: hidden; }

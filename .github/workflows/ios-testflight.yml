@@ -1,0 +1,95 @@
+name: iOS → TestFlight
+
+# Manuell starten: Actions → "iOS → TestFlight" → Run workflow
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versionsnummer (CFBundleShortVersionString)"
+        default: "1.0.0"
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      APP_ID: io.github.amigogelo.aktenschrank
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prüfe Secrets
+        run: |
+          missing=0
+          for v in ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_P8 TEAM_ID; do
+            if [ -z "${!v}" ]; then echo "::error::Secret fehlt: $v"; missing=1; fi
+          done
+          exit $missing
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Neueste Xcode-26-Version wählen
+        run: |
+          ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1 > /tmp/xcode_path || true
+          if [ -s /tmp/xcode_path ]; then sudo xcode-select -s "$(cat /tmp/xcode_path)/Contents/Developer"; fi
+          xcodebuild -version
+
+      - name: Web-App bauen und Capacitor einrichten
+        run: |
+          npm install --legacy-peer-deps
+          npm run build:web
+          npx cap add ios
+          npx cap sync ios
+          bash scripts/ios-patch.sh
+          ls ios/App
+
+      - name: API-Schlüssel ablegen
+        run: |
+          mkdir -p "$RUNNER_TEMP/keys"
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8"
+          echo "KEY_PATH=$RUNNER_TEMP/keys/AuthKey_${ASC_KEY_ID}.p8" >> "$GITHUB_ENV"
+
+      - name: Archivieren (automatische Signierung über App-Store-Connect-Schlüssel)
+        run: |
+          if [ -d ios/App/App.xcworkspace ]; then CONTAINER=(-workspace ios/App/App.xcworkspace); else CONTAINER=(-project ios/App/App.xcodeproj); fi
+          xcodebuild "${CONTAINER[@]}" -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" archive \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" PRODUCT_BUNDLE_IDENTIFIER="$APP_ID" \
+            MARKETING_VERSION="${{ inputs.version }}" CURRENT_PROJECT_VERSION="${{ github.run_number }}" \
+            | tee "$RUNNER_TEMP/archive.log" | tail -n 60
+
+      - name: Exportieren und zu TestFlight hochladen
+        run: |
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            | tee "$RUNNER_TEMP/export.log" | tail -n 40
+
+      - name: Logs sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: |
+            ${{ runner.temp }}/archive.log
+            ${{ runner.temp }}/export.log
+          if-no-files-found: ignore

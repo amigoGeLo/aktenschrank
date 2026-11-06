@@ -68,7 +68,7 @@ async function boot() {
   await initLock();
   if (!s.onboarded) welcome({ first: true });
 
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !window.Capacitor?.isNativePlatform?.()) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
   window.__aktenschrank = { store, ui };

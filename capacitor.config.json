@@ -1,0 +1,10 @@
+{
+  "appId": "io.github.amigogelo.aktenschrank",
+  "appName": "Aktenschrank",
+  "webDir": "www",
+  "backgroundColor": "#f2f2f7",
+  "ios": {
+    "contentInset": "never",
+    "limitsNavigationsToAppBoundDomains": false
+  }
+}
