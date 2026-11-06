@@ -1,0 +1,19 @@
+{
+  "name": "aktenschrank",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aktenschrank – iOS-App (Capacitor-Hülle um die PWA)",
+  "scripts": {
+    "build:web": "node scripts/build-web.mjs",
+    "test": "node tests/classify.test.mjs && node tools/check-data.mjs"
+  },
+  "dependencies": {
+    "@aparajita/capacitor-biometric-auth": "latest",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/ios": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0",
+    "esbuild": "^0.25.0"
+  }
+}

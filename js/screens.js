@@ -242,7 +242,17 @@ export const docSpec = id => {
     after: s => {},
   };
 
-  function openOriginal() { if (url) { const w = window.open(url, '_blank'); if (!w) location.href = url; } }
+  // Original in der App anzeigen (WKWebView/Standalone-PWA können Blob-Links nicht zuverlässig in neuen Fenstern öffnen).
+  async function openOriginal() {
+    if (!url || !blob) return;
+    const d = await store.getDoc(id);
+    const isImg = (blob.type || d?.mime || '').startsWith('image/');
+    const sh = ui.sheet({
+      title: d?.title || d?.name || '', full: true,
+      right: () => [h('button.nb-btn', { onclick: shareDoc }, t('share')), h('button.nb-btn.bold', { onclick: () => sh.close() }, t('done'))],
+      build: () => h('div.viewer', {}, isImg ? h('img', { src: url, alt: '' }) : h('iframe', { src: url, title: d?.title || '' })),
+    });
+  }
   async function shareDoc() {
     const d = await store.getDoc(id); if (!d || !blob) return;
     await shareOrDownload(blob, safeName(d.title || d.name) + extOf(d.name), d.title);

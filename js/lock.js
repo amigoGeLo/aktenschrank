@@ -36,10 +36,13 @@ export async function removeLock() { cfg = null; await store.kvSet(KEY, null); h
 export async function setAfter(sec) { if (cfg) { cfg.after = sec; await save(); } }
 
 /* ───── Face ID / Touch ID ───── */
+const NB = () => window.AktenNative?.BiometricAuth;   // nur in der iOS-App (Capacitor) vorhanden
 export async function bioSupported() {
+  if (NB()) { try { return !!(await NB().checkBiometry()).isAvailable; } catch { return false; } }
   try { return !!(window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()); } catch { return false; }
 }
 export async function enableBio() {
+  if (NB()) { await NB().authenticate({ reason: t('lock_bio'), cancelTitle: t('cancel'), allowDeviceCredential: false }); cfg.bio = 'native'; await save(); return; }
   const cred = await navigator.credentials.create({
     publicKey: {
       challenge: crypto.getRandomValues(new Uint8Array(32)),
@@ -56,6 +59,7 @@ export async function disableBio() { if (cfg) { cfg.bio = null; await save(); } 
 async function bioUnlock() {
   if (!cfg?.bio) return false;
   try {
+    if (cfg.bio === 'native') { if (!NB()) return false; await NB().authenticate({ reason: t('lock_title'), cancelTitle: t('cancel'), allowDeviceCredential: false }); return true; }
     await navigator.credentials.get({ publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)), allowCredentials: [{ type: 'public-key', id: unb64(cfg.bio) }], userVerification: 'required', timeout: 60000 } });
     return true;
   } catch { return false; }

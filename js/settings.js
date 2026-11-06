@@ -14,6 +14,9 @@ import * as lock from './lock.js';
 const gi = (name, color) => h('div.ico', { style: { background: color } }, icon(name));
 
 /* ───── Mehr (Hauptliste) ───── */
+// In der iOS-App (WKWebView) öffnet window.open nichts; dort in derselben Ansicht navigieren.
+const openPage = f => { if (window.Capacitor?.isNativePlatform?.()) location.href = f; else window.open(f, '_blank'); };
+
 export const moreSpec = () => ({
   title: () => t('more'),
   render: async () => {
@@ -32,8 +35,8 @@ export const moreSpec = () => ({
         listRow({ ico: gi('sparkles', '#5e5ce6'), title: t('ai_title'), value: s.aiOn && s.apiKey ? t('on') : t('off'), onclick: () => ui.push(aiSpec()) }))),
       h('div.sec', {}, h('div.group', {},
         listRow({ ico: gi('book', '#007aff'), title: t('guide'), onclick: () => ui.push(guideSpec()) }),
-        listRow({ ico: gi('shield', '#30b0c7'), title: t('privacy_full'), onclick: () => window.open('privacy.html', '_blank') }),
-        listRow({ ico: gi('scale', '#8e8e93'), title: t('impressum'), onclick: () => window.open('impressum.html', '_blank') }),
+        listRow({ ico: gi('shield', '#30b0c7'), title: t('privacy_full'), onclick: () => openPage('privacy.html') }),
+        listRow({ ico: gi('scale', '#8e8e93'), title: t('impressum'), onclick: () => openPage('impressum.html') }),
         listRow({ ico: gi('lock', '#30b0c7'), title: t('privacy'), onclick: () => ui.push(privacySpec()) }),
         listRow({ ico: gi('info', '#8e8e93'), title: t('welcome_again'), onclick: () => welcome() }))),
       h('div.sec-f', { style: { textAlign: 'center', paddingTop: '20px' } }, `Aktenschrank · ${TYPES.length - 1} ${t('doc_types')} · v1.0`),
