@@ -31,6 +31,7 @@ export const GUIDE = {
     { h: '9 · Wenn etwas nicht klappt', p: [
       { ul: ['Dokument landet im Eingang: Ein Tipp auf einen Vorschlag genügt; die App merkt es sich.', 'Foto wird nicht gelesen: besseres Licht, gerade fotografieren, Texterkennung unter Mehr → Sortierung einschalten, oder Text einfügen.', 'Speicher voll: Mehr → Sicherung & Speicher; alte Dokumente über „Aufräumen“ löschen.', 'App zeigt alte Version: App komplett schließen und neu öffnen.'] },
       'Die Hinweise in der App sind allgemeine Orientierung und keine Rechts- oder Steuerberatung. Bei Fristen und Beträgen gilt immer das Originalschreiben.' ] },
+    { h: 'App-Sperre', p: ['Unter „Mehr → Sperre“ legst du einen 6-stelligen Code fest und kannst Face ID / Touch ID als Abkürzung einschalten. Die Sperre verbirgt die App beim Zurückkehren oder im App-Umschalter. Sie verschlüsselt die Dokumente nicht – schalte zusätzlich die Gerätesperre deines iPhones ein. Code vergessen? Dann hilft nur Löschen der App-Daten; sichere deshalb vorher regelmäßig.' ] },
   ],
   ru: [
     { h: '1 · Установка на iPhone', p: [
@@ -63,6 +64,7 @@ export const GUIDE = {
     { h: '9 · Если что-то не получается', p: [
       { ul: ['Документ попал во «Входящие»: нажмите на подсказку — приложение запомнит.', 'Фото не читается: больше света, снимайте ровно, включите распознавание в Ещё → Сортировка или вставьте текст.', 'Память заполнена: Ещё → Резервная копия и память; удалите старое через «Очистку».', 'Показывается старая версия: полностью закройте приложение и откройте снова.'] },
       'Подсказки в приложении — общий ориентир, а не юридическая или налоговая консультация. По срокам и суммам всегда главное — оригинал письма.' ] },
+    { h: 'Блокировка приложения', p: ['В «Ещё → Блокировка» задайте 6-значный код и при желании включите Face ID / Touch ID. Блокировка прячет приложение при возврате и в переключателе приложений. Документы она не шифрует — дополнительно включите блокировку самого iPhone. Забыли код? Поможет только удаление данных приложения, поэтому заранее делайте резервные копии.' ] },
   ],
   en: [
     { h: '1 · Install on iPhone', p: [
@@ -95,6 +97,7 @@ export const GUIDE = {
     { h: '9 · If something goes wrong', p: [
       { ul: ['Document ended up in the Inbox: tap a suggestion; the app remembers it.', 'Photo not read: better light, shoot straight, enable OCR under More → Sorting, or paste the text.', 'Storage full: More → Backup & storage; delete old documents via “Clean up”.', 'App shows an old version: close the app completely and reopen it.'] },
       'Hints in the app are general guidance, not legal or tax advice. For deadlines and amounts the original letter always prevails.' ] },
+    { h: 'App lock', p: ['Under “More → Lock” set a 6-digit code and optionally enable Face ID / Touch ID. The lock hides the app when you return to it and in the app switcher. It does not encrypt the documents – also turn on your iPhone’s own passcode. Forgot the code? Only deleting the app data helps, so back up regularly.' ] },
   ],
 };
 

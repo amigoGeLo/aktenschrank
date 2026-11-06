@@ -9,6 +9,8 @@ const lu = require(R + 'react-icons/lu');
 const WANT = {
   'id-card': ['LuIdCard', 'LuContact'],
   'baby': ['LuBaby'],
+  'delete': ['LuDelete', 'LuDelete'],
+  'scan-face': ['LuScanFace'],
   'heart': ['LuHeart'],
   'file': ['LuFile'],
   'file-text': ['LuFileText'],
