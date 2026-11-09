@@ -1,5 +1,5 @@
 // Service Worker: App-Hülle offline verfügbar machen. Dokumente liegen in IndexedDB, nicht hier.
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'aktenschrank-' + VERSION;
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'privacy.html', 'impressum.html', 'css/app.css',
