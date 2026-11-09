@@ -29,12 +29,12 @@ p,li{margin:.5em 0}.mut{color:var(--mut);font-size:14px}a{color:var(--tint)}
 
 <section>
 <h2>2. Kurzfassung</h2>
-<p>Aktenschrank speichert deine Dokumente <b>ausschließlich auf deinem Gerät</b> (im Browser-Speicher IndexedDB). Es gibt kein Benutzerkonto, keinen Server des Betreibers, keine Werbung, kein Tracking und keine Cookies. Der Betreiber erhält keine deiner Dokumente, Texte oder Einstellungen.</p>
+<p>Aktenschrank speichert deine Dokumente <b>ausschließlich auf deinem Gerät</b> (im Browser-Speicher IndexedDB); einzige Ausnahme ist die optionale KI-Übersetzung (Abschnitt 5), die du selbst einschalten musst. Es gibt kein Benutzerkonto, keinen Server des Betreibers, keine Werbung, kein Tracking und keine Cookies. Der Betreiber erhält keine deiner Dokumente, Texte oder Einstellungen.</p>
 </section>
 
 <section>
 <h2>3. Was auf deinem Gerät gespeichert wird</h2>
-<p>Hochgeladene Dateien, der daraus gelesene Text, Titel, Absender, Datum, Fristen, Einstellungen, ein gelerntes Sortier-Profil sowie – falls du sie einschaltest – der Hash deines Sperr-Codes und eine Kennung für Face ID/Touch ID. Diese Daten verlassen das Gerät nicht, außer du erstellst selbst eine Sicherung (ZIP) und speicherst oder teilst sie. Die Sicherung ist nicht verschlüsselt; bewahre sie sicher auf. Du kannst alle Daten jederzeit unter „Mehr → Sicherung &amp; Speicher → Alle Daten löschen“ entfernen.</p>
+<p>Hochgeladene Dateien, der daraus gelesene Text, Titel, Absender, Datum, Fristen, Einstellungen, ein gelerntes Sortier-Profil sowie – falls du sie einschaltest – der Hash deines Sperr-Codes und eine Kennung für Face ID/Touch ID. Diese Daten verlassen das Gerät nicht, außer du erstellst selbst eine Sicherung (ZIP) und speicherst oder teilst sie oder du nutzt die optionale KI-Übersetzung (Abschnitt 5). Die Sicherung ist nicht verschlüsselt; bewahre sie sicher auf. Du kannst alle Daten jederzeit unter „Mehr → Sicherung &amp; Speicher → Alle Daten löschen“ entfernen.</p>
 </section>
 
 <section>
@@ -46,7 +46,7 @@ p,li{margin:.5em 0}.mut{color:var(--mut);font-size:14px}a{color:var(--tint)}
 <h2>5. Optionale Funktionen mit Verbindung nach außen</h2>
 <ul>
 <li><b>Texterkennung (OCR)</b>: Beim ersten Gebrauch lädt dein Gerät das Erkennungsprogramm vom CDN jsDelivr und die Sprachdaten von tessdata.projectnaptha.com. Dabei sehen diese Server deine IP-Adresse. Deine Dokumente werden nicht hochgeladen; die Erkennung läuft lokal. Du kannst die Funktion unter „Mehr → Sortierung“ ausschalten.</li>
-<li><b>KI-Übersetzung (nur auf deine Aktivierung)</b>: Wenn du sie einschaltest, einen eigenen API-Schlüssel einträgst und eine Übersetzung startest, wird der Text des gewählten Dokuments nach deiner Bestätigung direkt von deinem Gerät an Anthropic (api.anthropic.com) gesendet. Es gelten die Datenschutzbestimmungen von Anthropic; Nutzung und Kosten laufen über dein eigenes Anthropic-Konto. Der Betreiber dieser App erhält diese Daten nicht. Dein API-Schlüssel wird nur lokal gespeichert.</li>
+<li><b>KI-Übersetzung (nur auf deine Aktivierung)</b>: Wenn du sie einschaltest (die App weist beim Einschalten darauf hin), einen eigenen API-Schlüssel einträgst und eine Übersetzung startest, wird der vollständige Text des gewählten Dokuments – einschließlich aller darin enthaltenen personenbezogenen Daten wie Namen, Anschriften, Beträge oder Aktenzeichen – nach deiner erneuten Bestätigung direkt von deinem Gerät an Anthropic (api.anthropic.com) gesendet und dort verarbeitet. Der Text verlässt damit dein Gerät. Dein API-Schlüssel wird dabei zur Anmeldung bei Anthropic mitgesendet. Es gelten die Datenschutzbestimmungen von Anthropic; Nutzung und Kosten laufen über dein eigenes Anthropic-Konto. Der Betreiber dieser App erhält diese Daten nicht. Dein API-Schlüssel wird nur lokal gespeichert und nicht in Sicherungen aufgenommen. Ohne diese Funktion wird kein Dokumenttext an Dritte gesendet.</li>
 <li><b>Geräte-Übersetzung / iOS-Übersetzer</b>: Wird vom Browser bzw. Betriebssystem bereitgestellt; es gelten dessen Bedingungen.</li>
 </ul>
 </section>

@@ -248,6 +248,22 @@ textarea.ta { width: 100%; min-height: 160px; border: 0; outline: 0; resize: ver
 .feat { display: flex; gap: 14px; margin: 0 0 16px; }
 .feat b { display: block; font-size: 16px; }
 .feat span { display: block; font-size: 14px; color: var(--label2); line-height: 1.35; }
+
+/* ───── Installations-Sperre (iPhone, nur im Browser) ───── */
+.gate { position: absolute; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; background: var(--bg); padding: calc(var(--sat) + 28px) 16px calc(var(--sab) + 36px); }
+.gate-in { max-width: 520px; margin: 0 auto; }
+.gate-head { text-align: center; margin-bottom: 20px; }
+.gate-ico { width: 72px; height: 72px; border-radius: 16px; box-shadow: var(--shadow); }
+.gate-name { font-size: 22px; font-weight: 700; margin-top: 10px; }
+.gate-lang { background: var(--card); border-radius: 14px; padding: 16px 18px 6px; margin: 0 0 14px; box-shadow: var(--shadow); }
+.gate-tag { font-size: 12px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--tint); margin-bottom: 4px; }
+.gate-lang h2 { font-size: 24px; line-height: 1.15; margin: 0 0 6px; }
+.gate-lang p { margin: 0 0 14px; color: var(--label2); font-size: 15px; line-height: 1.4; }
+.gate-lang ol { margin: 0; padding: 0; list-style: none; counter-reset: gs; }
+.gate-lang li { counter-increment: gs; position: relative; padding: 0 0 12px 36px; font-size: 15px; line-height: 1.4; }
+.gate-lang li::before { content: counter(gs); position: absolute; left: 0; top: -1px; width: 24px; height: 24px; border-radius: 50%; background: var(--tint-soft); color: var(--tint); font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+.gate-copy { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin: 0 0 14px; padding: 14px; border-radius: 14px; background: var(--tint); color: #fff; font-weight: 600; font-size: 17px; text-align: center; }
+.gate-copy:active { opacity: .7; }
 .guide h3 { margin: 22px 20px 6px; font-size: 20px; }
 .guide p, .guide li { font-size: 16px; line-height: 1.45; }
 .guide .gbody { margin: 0 16px; background: var(--card); border-radius: 14px; padding: 14px 16px; }

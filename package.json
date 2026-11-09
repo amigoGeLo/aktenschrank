@@ -5,7 +5,7 @@
   "description": "Aktenschrank – iOS-App (Capacitor-Hülle um die PWA)",
   "scripts": {
     "build:web": "node scripts/build-web.mjs",
-    "test": "node tests/classify.test.mjs && node tools/check-data.mjs"
+    "test": "node tests/classify.test.mjs && node tests/gate.test.mjs && node tools/check-data.mjs"
   },
   "dependencies": {
     "@aparajita/capacitor-biometric-auth": "latest",

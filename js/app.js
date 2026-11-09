@@ -8,6 +8,7 @@ import { isInbox } from './core.js';
 import { homeSpec, inboxSpec, searchSpec, goInbox } from './screens.js';
 import { moreSpec, welcome } from './settings.js';
 import { initLock } from './lock.js';
+import { needsInstall, showInstallGate } from './install-gate.js';
 
 const TABS = [
   { id: 'files', icon: 'folder', key: 'files_tab', root: () => homeSpec() },
@@ -31,6 +32,8 @@ async function refreshInboxBadge() {
 function relabel() { for (const d of TABS) ui.setTabLabel(d.id, t(d.key)); }
 
 async function boot() {
+  // iPhone/iPad im Browser-Tab: erst installieren. Hier wird bewusst nichts gespeichert (kein store.init, kein Service Worker).
+  if (needsInstall()) { showInstallGate(); return; }
   await store.init();
   let s = store.getSettings();
   if (!s.onboarded && s.lang === 'de' && !(await store.kvGet('langSet', false))) {

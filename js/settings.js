@@ -276,7 +276,11 @@ const aiSpec = () => ({
     return [
       h('div.warnbox', {}, icon('alert'), h('div', {}, t('ai_warning'))),
       h('div.sec', {}, h('div.group', {},
-        h('div.row', {}, h('div.grow', {}, h('div.t1', {}, t('ai_on'))), switchEl(s.aiOn, v => store.setSettings({ aiOn: v }))),
+        h('div.row', {}, h('div.grow', {}, h('div.t1', {}, t('ai_on'))), switchEl(s.aiOn, async v => {
+          // Beim Einschalten klar warnen: der Dokumenttext geht an Anthropic. Abbrechen → Schalter zurücksetzen.
+          if (v && !(await ui.confirmDialog({ title: t('ai_enable_q'), message: t('ai_enable_t'), ok: t('ai_enable_ok'), cancel: t('cancel') }))) { ui.reloadAll(); return; }
+          store.setSettings({ aiOn: v });
+        })),
         h('div.row', {}, h('div.t1', { style: { flex: 'none' } }, t('ai_key')), key)),
         h('div.sec-f', {}, t('ai_t'))),
     ];
